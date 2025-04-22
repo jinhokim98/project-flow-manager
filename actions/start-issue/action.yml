@@ -1,0 +1,18 @@
+name: 'start-issue'
+description: '브랜치 생성 시 이슈를 In Progress 상태로 이동'
+inputs:
+  github_token:
+    description: 'GitHub Token, project에 접근할 수 있는 권한이 있어야 합니다'
+    required: true
+  project_owner:
+    description: 'Organization or User'
+    required: true
+  project_number:
+    required: true
+  target_column:
+    description: 'Target Column Name, 이 옵션을 주지 않으면 기본값은 In Progress'
+    required: false
+    default: 'In Progress'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
