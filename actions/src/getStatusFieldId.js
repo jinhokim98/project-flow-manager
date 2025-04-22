@@ -1,6 +1,6 @@
 const core = require("@actions/core");
 
-export default async function getStatusFieldId(octokit, projectId) {
+async function getStatusFieldId(octokit, projectId) {
   const query = `
     query($projectId: ID!) {
       node(id: $projectId) {
@@ -33,3 +33,5 @@ export default async function getStatusFieldId(octokit, projectId) {
 
   return statusField.id;
 }
+
+module.exports = getStatusFieldId;

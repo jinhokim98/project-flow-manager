@@ -1,6 +1,6 @@
 const core = require("@actions/core");
 
-export default async function updateStatusField(octokit, projectId, itemId, fieldId, optionId) {
+async function updateStatusField(octokit, projectId, itemId, fieldId, optionId) {
   const mutation = `
     mutation($input: UpdateProjectV2ItemFieldValueInput!) {
       updateProjectV2ItemFieldValue(input: $input) {
@@ -31,3 +31,5 @@ export default async function updateStatusField(octokit, projectId, itemId, fiel
 
   return response.updateProjectV2ItemFieldValue.projectV2Item.id;
 }
+
+module.exports = updateStatusField;

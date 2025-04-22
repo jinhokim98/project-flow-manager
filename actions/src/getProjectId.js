@@ -1,6 +1,6 @@
 const core = require("@actions/core");
 
-export default async function getProjectId(octokit, projectType) {
+async function getProjectId(octokit, projectType) {
   const projectNumber = parseInt(core.getInput("project_number"));
 
   const query = `
@@ -21,3 +21,5 @@ export default async function getProjectId(octokit, projectType) {
 
   return projectType === "Organization" ? response.organization.projectV2.id : response.user.projectV2.id;
 }
+
+module.exports = getProjectId;

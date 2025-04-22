@@ -1,6 +1,6 @@
 const core = require("@actions/core");
 
-export default async function addIssueToProject(octokit, projectId, issueNodeId) {
+async function addIssueToProject(octokit, projectId, issueNodeId) {
   const mutation = `
     mutation($projectId: ID!, $contentId: ID!) {
       addProjectV2ItemById(input: {
@@ -24,3 +24,5 @@ export default async function addIssueToProject(octokit, projectId, issueNodeId)
 
   return response.addProjectV2ItemById.item.id;
 }
+
+module.exports = addIssueToProject;

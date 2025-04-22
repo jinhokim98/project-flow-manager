@@ -1,4 +1,4 @@
-export default async function getStatusOptionId(octokit, statusFieldId, targetColumn) {
+async function getStatusOptionId(octokit, statusFieldId, targetColumn) {
   const query = `
     query($fieldId: ID!) {
       node(id: $fieldId) {
@@ -27,3 +27,5 @@ export default async function getStatusOptionId(octokit, statusFieldId, targetCo
 
   return option.id;
 }
+
+module.exports = getStatusOptionId;
