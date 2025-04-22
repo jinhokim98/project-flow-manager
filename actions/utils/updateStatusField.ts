@@ -1,6 +1,13 @@
-const core = require("@actions/core");
+import {getInput} from '@actions/core';
+import {OctokitType} from '../type';
 
-async function updateStatusField(octokit, projectId, itemId, fieldId, optionId) {
+export async function updateStatusField(
+  octokit: OctokitType,
+  projectId: string,
+  itemId: string,
+  fieldId: string,
+  optionId: string,
+): Promise<string> {
   const mutation = `
     mutation($input: UpdateProjectV2ItemFieldValueInput!) {
       updateProjectV2ItemFieldValue(input: $input) {
@@ -22,14 +29,16 @@ async function updateStatusField(octokit, projectId, itemId, fieldId, optionId) 
     },
   };
 
-  const response = await octokit.graphql(mutation, {
+  const response = await octokit.graphql<{
+    updateProjectV2ItemFieldValue: {
+      projectV2Item: {id: string};
+    };
+  }>(mutation, {
     ...variables,
     headers: {
-      authorization: `Bearer ${core.getInput("github_token")}`,
+      authorization: `Bearer ${getInput('github_token')}`,
     },
   });
 
   return response.updateProjectV2ItemFieldValue.projectV2Item.id;
 }
-
-module.exports = updateStatusField;
