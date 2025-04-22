@@ -33,15 +33,15 @@ async function run() {
     });
 
     // target column id를 얻어오는 과정
-    const projectId = await getProjectId(octokit, projectOwner, projectNumber);
-    const {fieldId, options} = await getProjectFieldId(octokit, projectId);
+    const projectId = await getProjectId(octokit, token, projectOwner, projectNumber);
+    const {fieldId, options} = await getProjectFieldId(octokit, token, projectId);
     const statusOptionId = getProjectOptionId(options, targetColumn);
 
     // 이슈 item id를 얻어옴 -> 이미 프로젝트에 등록되어있으면 그 id를 반환하기 때문에 addIssueToProject를 호출해도 무방
-    const itemId = await addIssueToProject(octokit, projectId, issue.node_id);
+    const itemId = await addIssueToProject(octokit, token, projectId, issue.node_id);
 
     // 이슈 상태를 특정 상태로 업데이트
-    await updateStatusField(octokit, projectId, itemId, fieldId, statusOptionId);
+    await updateStatusField(octokit, token, projectId, itemId, fieldId, statusOptionId);
 
     info(`이슈 #${issueNumber}가 '${targetColumn}' 상태로 이동되었습니다.`);
   } catch (error) {

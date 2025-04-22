@@ -1,8 +1,8 @@
-import {getInput} from '@actions/core';
 import {OctokitType} from '../type';
 
 export async function updateStatusField(
   octokit: OctokitType,
+  token: string,
   projectId: string,
   itemId: string,
   fieldId: string,
@@ -36,7 +36,7 @@ export async function updateStatusField(
   }>(mutation, {
     ...variables,
     headers: {
-      authorization: `Bearer ${getInput('github_token')}`,
+      authorization: `Bearer ${token}`,
     },
   });
 

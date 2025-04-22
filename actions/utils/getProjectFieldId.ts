@@ -1,4 +1,3 @@
-import {getInput} from '@actions/core';
 import {OctokitType, SingleSelectOption} from '../type';
 
 type GetProjectFieldResponse = {
@@ -15,6 +14,7 @@ type GetProjectFieldResponse = {
 
 export async function getProjectFieldId(
   octokit: OctokitType,
+  token: string,
   projectId: string,
 ): Promise<{fieldId: string; options: SingleSelectOption[]}> {
   const query = `
@@ -41,7 +41,7 @@ export async function getProjectFieldId(
   const response = await octokit.graphql<GetProjectFieldResponse>(query, {
     projectId,
     headers: {
-      authorization: `Bearer ${getInput('github_token')}`,
+      authorization: `Bearer ${token}`,
     },
   });
 

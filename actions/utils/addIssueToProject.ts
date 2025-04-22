@@ -1,5 +1,4 @@
 import {OctokitType} from '../type';
-import {getInput} from '@actions/core';
 
 type AddIssueToProjectResponse = {
   addProjectV2ItemById: {
@@ -9,7 +8,12 @@ type AddIssueToProjectResponse = {
   };
 };
 
-export async function addIssueToProject(octokit: OctokitType, projectId: string, issueNodeId: string): Promise<string> {
+export async function addIssueToProject(
+  octokit: OctokitType,
+  token: string,
+  projectId: string,
+  issueNodeId: string,
+): Promise<string> {
   const mutation = `
     mutation($projectId: ID!, $contentId: ID!) {
       addProjectV2ItemById(input: {
@@ -27,7 +31,7 @@ export async function addIssueToProject(octokit: OctokitType, projectId: string,
     projectId,
     contentId: issueNodeId,
     headers: {
-      authorization: `Bearer ${getInput('github_token')}`,
+      authorization: `Bearer ${token}`,
     },
   });
 

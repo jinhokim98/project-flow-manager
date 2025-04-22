@@ -1,4 +1,3 @@
-import {getInput} from '@actions/core';
 import {OctokitType} from '../type';
 
 type OrganizationProjectResponse = {
@@ -24,7 +23,7 @@ async function getProjectType(octokit: OctokitType, projectOwner: string) {
   return res.data.type; // "User" or "Organization"
 }
 
-export async function getProjectId(octokit: OctokitType, projectOwner: string, projectNumber: number) {
+export async function getProjectId(octokit: OctokitType, token: string, projectOwner: string, projectNumber: number) {
   const projectType = await getProjectType(octokit, projectOwner);
 
   const query = `
@@ -41,7 +40,7 @@ export async function getProjectId(octokit: OctokitType, projectOwner: string, p
     login: projectOwner,
     number: projectNumber,
     headers: {
-      authorization: `Bearer ${getInput('github_token')}`,
+      authorization: `Bearer ${token}`,
     },
   });
 
