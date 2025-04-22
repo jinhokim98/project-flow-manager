@@ -5,6 +5,7 @@ const getProjectId = require("./getProjectId");
 const addIssueToProject = require("./addIssueToProject");
 const getStatusFieldId = require("./getStatusFieldId");
 const getStatusOptionId = require("./getStatusOptionId");
+const updateStatusField = require("./updateStatusField");
 
 async function resolveProjectType(octokit, projectName) {
   const res = await octokit.rest.users.getByUsername({ username: projectName });
@@ -37,7 +38,7 @@ async function run() {
     const statusOptionId = await getStatusOptionId(octokit, fieldId, targetColumn);
 
     // 6. Status를 target column으로 설정
-    await updateStatusField(octokit, projectId, itemId, fieldId, targetColumn);
+    await updateStatusField(octokit, projectId, itemId, fieldId, statusOptionId);
 
     core.info(`이슈가 프로젝트에 등록되고 ${targetColumn}로 설정되었습니다.`);
   } catch (error) {
