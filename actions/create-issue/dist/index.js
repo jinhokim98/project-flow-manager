@@ -34338,15 +34338,12 @@ var core = __nccwpck_require__(7484);
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __nccwpck_require__(3228);
 ;// CONCATENATED MODULE: ./actions/utils/getProjectId.ts
-
 async function getProjectType(octokit, projectOwner) {
     const res = await octokit.rest.users.getByUsername({ username: projectOwner });
     return res.data.type; // "User" or "Organization"
 }
 async function getProjectId(octokit, token, projectOwner, projectNumber) {
     const projectType = await getProjectType(octokit, projectOwner);
-    (0,core.info)(`Project Type: ${projectType}`);
-    (0,core.info)(`GraphQL Query: ${projectType === 'Organization' ? 'organization' : 'user'}(login: ${projectOwner})`);
     const query = `
     query($login: String!, $number: Int!) {
       ${projectType === 'Organization' ? 'organization' : 'user'}(login: $login) {
