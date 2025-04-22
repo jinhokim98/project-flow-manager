@@ -4,8 +4,8 @@ inputs:
   github_token:
     description: "GitHub Token"
     required: true
-  owner:
-    description: "Organization or User Name"
+  project_name:
+    description: "Organization or User Project Name"
     required: true
   project_number:
     required: true

@@ -1,11 +1,11 @@
 const core = require("@actions/core");
 
-export default async function getProjectId(octokit, ownerType) {
+export default async function getProjectId(octokit, projectType) {
   const projectNumber = parseInt(core.getInput("project_number"));
 
   const query = `
   query($login: String!, $number: Int!) {
-    ${ownerType === "Organization" ? "organization" : "user"}(login: $login) {
+    ${projectType === "Organization" ? "organization" : "user"}(login: $login) {
       projectV2(number: $number) {
         id
       }
@@ -19,5 +19,5 @@ export default async function getProjectId(octokit, ownerType) {
     headers: { authorization: `Bearer ${core.getInput("github-token")}` },
   });
 
-  return ownerType === "Organization" ? response.organization.projectV2.id : response.user.projectV2.id;
+  return projectType === "Organization" ? response.organization.projectV2.id : response.user.projectV2.id;
 }
