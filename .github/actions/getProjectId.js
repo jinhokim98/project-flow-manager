@@ -16,7 +16,7 @@ export default async function getProjectId(octokit, projectType) {
   const response = await octokit.graphql(query, {
     login: owner,
     number: projectNumber,
-    headers: { authorization: `Bearer ${core.getInput("github-token")}` },
+    headers: { authorization: `Bearer ${core.getInput("github_token")}` },
   });
 
   return projectType === "Organization" ? response.organization.projectV2.id : response.user.projectV2.id;

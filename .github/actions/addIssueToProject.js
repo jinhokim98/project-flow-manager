@@ -18,7 +18,7 @@ export default async function addIssueToProject(octokit, projectId, issueNodeId)
     projectId,
     contentId: issueNodeId,
     headers: {
-      authorization: `Bearer ${core.getInput("github-token")}`,
+      authorization: `Bearer ${core.getInput("github_token")}`,
     },
   });
 

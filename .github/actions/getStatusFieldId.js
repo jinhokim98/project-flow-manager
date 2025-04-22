@@ -20,7 +20,7 @@ export default async function getStatusFieldId(octokit, projectId) {
   const response = await octokit.graphql(query, {
     projectId,
     headers: {
-      authorization: `Bearer ${core.getInput("github-token")}`,
+      authorization: `Bearer ${core.getInput("github_token")}`,
     },
   });
 

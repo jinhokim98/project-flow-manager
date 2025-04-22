@@ -13,7 +13,7 @@ async function resolveProjectType(octokit, projectName) {
 
 async function run() {
   try {
-    const token = core.getInput("github-token");
+    const token = core.getInput("github_token");
     const octokit = github.getOctokit(token);
     const context = github.context;
     const targetColumn = core.getInput("target_column") ?? "Todo";

@@ -25,7 +25,7 @@ export default async function updateStatusField(octokit, projectId, itemId, fiel
   const response = await octokit.graphql(mutation, {
     ...variables,
     headers: {
-      authorization: `Bearer ${core.getInput("github-token")}`,
+      authorization: `Bearer ${core.getInput("github_token")}`,
     },
   });
 
