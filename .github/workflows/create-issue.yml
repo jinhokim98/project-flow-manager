@@ -1,4 +1,4 @@
-name: "Issue to Project Auto Assign"
+name: 'Create Issue'
 on:
   issues:
     types: [opened]
@@ -10,10 +10,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Run Create Issue action
+      - name: Run Create Issue
         uses: ./actions/create-issue
         with:
           github_token: ${{ secrets.SECRET_GITHUB_TOKEN }}
-          project_owner: "jinhokim98"
+          project_owner: 'jinhokim98'
           project_number: 2
-          target_column: "In Progress"
+          target_column: 'Todo'
