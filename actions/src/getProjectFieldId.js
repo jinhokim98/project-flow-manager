@@ -1,15 +1,20 @@
 const core = require("@actions/core");
 
-async function getStatusFieldId(octokit, projectId) {
+async function getProjectFieldId(octokit, projectId) {
   const query = `
     query($projectId: ID!) {
       node(id: $projectId) {
         ... on ProjectV2 {
           fields(first: 50) {
             nodes {
-              id
-              name
-              dataType
+              ... on ProjectV2SingleSelectField {
+                id
+                name
+                options {
+                  id
+                  name
+                }
+              }
             }
           }
         }
@@ -25,13 +30,16 @@ async function getStatusFieldId(octokit, projectId) {
   });
 
   const fields = response.node.fields.nodes;
-  const statusField = fields.find((field) => field.name === "Status");
+  const specificField = fields.find((field) => field.name === "Status");
 
-  if (!statusField) {
+  if (!specificField) {
     throw new Error("'Status' 필드를 찾을 수 없습니다.");
   }
 
-  return statusField.id;
+  return {
+    fieldId: specificField.id,
+    options: specificField.options,
+  };
 }
 
-module.exports = getStatusFieldId;
+module.exports = getProjectFieldId;

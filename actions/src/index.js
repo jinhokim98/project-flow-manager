@@ -3,8 +3,8 @@ const github = require("@actions/github");
 
 const getProjectId = require("./getProjectId");
 const addIssueToProject = require("./addIssueToProject");
-const getStatusFieldId = require("./getStatusFieldId");
-const getStatusOptionId = require("./getStatusOptionId");
+const getProjectFieldId = require("./getProjectFieldId");
+const getProjectOptionId = require("./getProjectOptionId");
 const updateStatusField = require("./updateStatusField");
 
 async function resolveProjectType(octokit, projectOwner) {
@@ -32,10 +32,10 @@ async function run() {
     const itemId = await addIssueToProject(octokit, projectId, issueId);
 
     // 4. Status 필드 ID 가져오기
-    const fieldId = await getStatusFieldId(octokit, projectId);
+    const { fieldId, options } = await getProjectFieldId(octokit, projectId);
 
     // 5. Status Option ID 가져오기
-    const statusOptionId = await getStatusOptionId(octokit, fieldId, targetColumn);
+    const statusOptionId = await getProjectOptionId(options, targetColumn);
 
     // 6. Status를 target column으로 설정
     await updateStatusField(octokit, projectId, itemId, fieldId, statusOptionId);
