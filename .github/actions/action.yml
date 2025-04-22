@@ -1,0 +1,17 @@
+name: "Issue to Project"
+description: "Add new issues to a GitHub Project and set to a Target Column"
+inputs:
+  github_token:
+    description: "GitHub Token"
+    required: true
+  project_owner:
+    description: "Organization or User"
+    required: true
+  project_number:
+    required: true
+  target_column:
+    description: "Target Column Name, 이 옵션을 주지 않으면 기본값은 Todo"
+    required: false
+runs:
+  using: "node16"
+  main: "dist/index.js"
