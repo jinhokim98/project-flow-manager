@@ -16,7 +16,7 @@ async function run() {
     const token = core.getInput("github-token");
     const octokit = github.getOctokit(token);
     const context = github.context;
-    const targetColumn = core.getInput("target_column") ?? "To Do";
+    const targetColumn = core.getInput("target_column") ?? "Todo";
 
     const issueId = context.payload.issue.node_id;
     const owner = core.getInput("owner");
