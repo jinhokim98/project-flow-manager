@@ -7,8 +7,8 @@ const getStatusFieldId = require("./getStatusFieldId");
 const getStatusOptionId = require("./getStatusOptionId");
 const updateStatusField = require("./updateStatusField");
 
-async function resolveProjectType(octokit, projectName) {
-  const res = await octokit.rest.users.getByUsername({ username: projectName });
+async function resolveProjectType(octokit, projectOwner) {
+  const res = await octokit.rest.users.getByUsername({ username: projectOwner });
   return res.data.type; // "User" or "Organization"
 }
 
@@ -20,10 +20,10 @@ async function run() {
     const targetColumn = core.getInput("target_column") ?? "Todo";
 
     const issueId = context.payload.issue.node_id;
-    const projectName = core.getInput("project_name");
+    const projectOwner = core.getInput("project_owner");
 
     // 1. project가 user인지 organization인지 확인
-    const projectType = await resolveProjectType(octokit, projectName);
+    const projectType = await resolveProjectType(octokit, projectOwner);
 
     // 2. 프로젝트 ID 가져오기
     const projectId = await getProjectId(octokit, projectType);
