@@ -12,7 +12,7 @@ jobs:
       - name: Run custom action
         uses: ./
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.SECRET_GITHUB_TOKEN }}
           project_name: "template"
           project_number: 2
           target_column: "In Progress"
