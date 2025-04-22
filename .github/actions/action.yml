@@ -10,7 +10,7 @@ inputs:
   project_number:
     required: true
   target_column:
-    description: "Target Column Name"
+    description: "Target Column Name, 이 옵션을 주지 않으면 기본값은 Todo"
     required: false
 runs:
   using: "node16"
