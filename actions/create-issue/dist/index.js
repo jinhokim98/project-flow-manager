@@ -34338,12 +34338,11 @@ var core = __nccwpck_require__(7484);
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __nccwpck_require__(3228);
 ;// CONCATENATED MODULE: ./actions/utils/getProjectId.ts
-
 async function getProjectType(octokit, projectOwner) {
     const res = await octokit.rest.users.getByUsername({ username: projectOwner });
     return res.data.type; // "User" or "Organization"
 }
-async function getProjectId(octokit, projectOwner, projectNumber) {
+async function getProjectId(octokit, token, projectOwner, projectNumber) {
     const projectType = await getProjectType(octokit, projectOwner);
     const query = `
     query($login: String!, $number: Int!) {
@@ -34358,7 +34357,7 @@ async function getProjectId(octokit, projectOwner, projectNumber) {
         login: projectOwner,
         number: projectNumber,
         headers: {
-            authorization: `Bearer ${(0,core.getInput)('github_token')}`,
+            authorization: `Bearer ${token}`,
         },
     });
     if ('organization' in response && response.organization?.projectV2?.id) {
@@ -34371,8 +34370,7 @@ async function getProjectId(octokit, projectOwner, projectNumber) {
 }
 
 ;// CONCATENATED MODULE: ./actions/utils/addIssueToProject.ts
-
-async function addIssueToProject(octokit, projectId, issueNodeId) {
+async function addIssueToProject(octokit, token, projectId, issueNodeId) {
     const mutation = `
     mutation($projectId: ID!, $contentId: ID!) {
       addProjectV2ItemById(input: {
@@ -34389,15 +34387,14 @@ async function addIssueToProject(octokit, projectId, issueNodeId) {
         projectId,
         contentId: issueNodeId,
         headers: {
-            authorization: `Bearer ${(0,core.getInput)('github_token')}`,
+            authorization: `Bearer ${token}`,
         },
     });
     return response.addProjectV2ItemById.item.id;
 }
 
 ;// CONCATENATED MODULE: ./actions/utils/getProjectFieldId.ts
-
-async function getProjectFieldId(octokit, projectId) {
+async function getProjectFieldId(octokit, token, projectId) {
     const query = `
     query($projectId: ID!) {
       node(id: $projectId) {
@@ -34421,7 +34418,7 @@ async function getProjectFieldId(octokit, projectId) {
     const response = await octokit.graphql(query, {
         projectId,
         headers: {
-            authorization: `Bearer ${(0,core.getInput)('github_token')}`,
+            authorization: `Bearer ${token}`,
         },
     });
     const { nodes: fields } = response.node.fields;
@@ -34445,8 +34442,7 @@ function getProjectOptionId(options, targetColumn) {
 }
 
 ;// CONCATENATED MODULE: ./actions/utils/updateStatusField.ts
-
-async function updateStatusField(octokit, projectId, itemId, fieldId, optionId) {
+async function updateStatusField(octokit, token, projectId, itemId, fieldId, optionId) {
     const mutation = `
     mutation($input: UpdateProjectV2ItemFieldValueInput!) {
       updateProjectV2ItemFieldValue(input: $input) {
@@ -34469,7 +34465,7 @@ async function updateStatusField(octokit, projectId, itemId, fieldId, optionId) 
     const response = await octokit.graphql(mutation, {
         ...variables,
         headers: {
-            authorization: `Bearer ${(0,core.getInput)('github_token')}`,
+            authorization: `Bearer ${token}`,
         },
     });
     return response.updateProjectV2ItemFieldValue.projectV2Item.id;
@@ -34492,15 +34488,15 @@ async function run() {
         const octokit = (0,github.getOctokit)(token);
         const issueId = github.context.payload.issue?.node_id;
         // 1. 프로젝트 ID 가져오기
-        const projectId = await getProjectId(octokit, projectOwner, projectNumber);
+        const projectId = await getProjectId(octokit, token, projectOwner, projectNumber);
         // 2. 이슈를 프로젝트에 등록
-        const itemId = await addIssueToProject(octokit, projectId, issueId);
+        const itemId = await addIssueToProject(octokit, token, projectId, issueId);
         // 3. Status 필드 ID 가져오기
-        const { fieldId, options } = await getProjectFieldId(octokit, projectId);
+        const { fieldId, options } = await getProjectFieldId(octokit, token, projectId);
         // 4. Status Option ID 가져오기
         const statusOptionId = getProjectOptionId(options, targetColumn);
         // 5. Status를 target column으로 설정
-        await updateStatusField(octokit, projectId, itemId, fieldId, statusOptionId);
+        await updateStatusField(octokit, token, projectId, itemId, fieldId, statusOptionId);
         (0,core.info)(`이슈가 프로젝트에 등록되고 ${targetColumn}로 설정되었습니다.`);
     }
     catch (error) {
