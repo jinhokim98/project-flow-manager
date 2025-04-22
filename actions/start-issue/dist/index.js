@@ -34338,12 +34338,15 @@ var core = __nccwpck_require__(7484);
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __nccwpck_require__(3228);
 ;// CONCATENATED MODULE: ./actions/utils/getProjectId.ts
+
 async function getProjectType(octokit, projectOwner) {
     const res = await octokit.rest.users.getByUsername({ username: projectOwner });
     return res.data.type; // "User" or "Organization"
 }
 async function getProjectId(octokit, token, projectOwner, projectNumber) {
     const projectType = await getProjectType(octokit, projectOwner);
+    (0,core.info)(`Project Type: ${projectType}`);
+    (0,core.info)(`GraphQL Query: ${projectType === 'Organization' ? 'organization' : 'user'}(login: ${projectOwner})`);
     const query = `
     query($login: String!, $number: Int!) {
       ${projectType === 'Organization' ? 'organization' : 'user'}(login: $login) {
@@ -34483,7 +34486,7 @@ async function run() {
     try {
         const token = (0,core.getInput)('github_token');
         const projectOwner = (0,core.getInput)('project_owner');
-        const projectNumber = parseInt((0,core.getInput)('project_number'));
+        const projectNumber = parseInt((0,core.getInput)('project_number'), 10);
         const targetColumn = (0,core.getInput)('target_column');
         const octokit = (0,github.getOctokit)(token);
         // refs/heads/feature/123-add-logic 같은 브랜치 이름에서 123을 추출
