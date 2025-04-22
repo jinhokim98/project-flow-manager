@@ -15,6 +15,6 @@ jobs:
         uses: ./actions/start-issue
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          project_owner: jinhokim98
+          project_owner: 'jinhokim98'
           project_number: 2
-          target_column: In Progress
+          target_column: 'In Progress'
