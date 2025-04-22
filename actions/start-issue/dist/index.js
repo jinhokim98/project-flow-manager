@@ -34370,31 +34370,6 @@ async function getProjectId(octokit, projectOwner, projectNumber) {
     throw new Error('Project ID를 찾을 수 없습니다.');
 }
 
-;// CONCATENATED MODULE: ./actions/utils/addIssueToProject.ts
-
-async function addIssueToProject(octokit, projectId, issueNodeId) {
-    const mutation = `
-    mutation($projectId: ID!, $contentId: ID!) {
-      addProjectV2ItemById(input: {
-        projectId: $projectId
-        contentId: $contentId
-      }) {
-        item {
-          id
-        }
-      }
-    }
-  `;
-    const response = await octokit.graphql(mutation, {
-        projectId,
-        contentId: issueNodeId,
-        headers: {
-            authorization: `Bearer ${(0,core.getInput)('github_token')}`,
-        },
-    });
-    return response.addProjectV2ItemById.item.id;
-}
-
 ;// CONCATENATED MODULE: ./actions/utils/getProjectFieldId.ts
 
 async function getProjectFieldId(octokit, projectId) {
@@ -34475,7 +34450,32 @@ async function updateStatusField(octokit, projectId, itemId, fieldId, optionId) 
     return response.updateProjectV2ItemFieldValue.projectV2Item.id;
 }
 
-;// CONCATENATED MODULE: ./actions/create-issue/index.ts
+;// CONCATENATED MODULE: ./actions/utils/addIssueToProject.ts
+
+async function addIssueToProject(octokit, projectId, issueNodeId) {
+    const mutation = `
+    mutation($projectId: ID!, $contentId: ID!) {
+      addProjectV2ItemById(input: {
+        projectId: $projectId
+        contentId: $contentId
+      }) {
+        item {
+          id
+        }
+      }
+    }
+  `;
+    const response = await octokit.graphql(mutation, {
+        projectId,
+        contentId: issueNodeId,
+        headers: {
+            authorization: `Bearer ${(0,core.getInput)('github_token')}`,
+        },
+    });
+    return response.addProjectV2ItemById.item.id;
+}
+
+;// CONCATENATED MODULE: ./actions/start-issue/index.ts
 
 
 
@@ -34486,29 +34486,35 @@ async function updateStatusField(octokit, projectId, itemId, fieldId, optionId) 
 async function run() {
     try {
         const token = (0,core.getInput)('github_token');
-        const targetColumn = (0,core.getInput)('target_column');
         const projectOwner = (0,core.getInput)('project_owner');
         const projectNumber = parseInt((0,core.getInput)('project_number'), 10);
+        const targetColumn = (0,core.getInput)('target_column');
         const octokit = (0,github.getOctokit)(token);
-        const issueId = github.context.payload.issue?.node_id;
-        // 1. 프로젝트 ID 가져오기
+        // refs/heads/feature/123-add-logic 같은 브랜치 이름에서 123을 추출
+        const branchName = github.context.ref.replace('refs/heads/', '');
+        const issueNumberMatch = branchName.match(/(\d+)/);
+        if (!issueNumberMatch) {
+            throw new Error('브랜치 이름에서 이슈 번호를 추출할 수 없습니다.');
+        }
+        const issueNumber = parseInt(issueNumberMatch[1], 10);
+        const { data: issue } = await octokit.rest.issues.get({
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            issue_number: issueNumber,
+        });
+        // target column id를 얻어오는 과정
         const projectId = await getProjectId(octokit, projectOwner, projectNumber);
-        // 2. 이슈를 프로젝트에 등록
-        const itemId = await addIssueToProject(octokit, projectId, issueId);
-        // 3. Status 필드 ID 가져오기
         const { fieldId, options } = await getProjectFieldId(octokit, projectId);
-        // 4. Status Option ID 가져오기
         const statusOptionId = getProjectOptionId(options, targetColumn);
-        // 5. Status를 target column으로 설정
+        // 이슈 item id를 얻어옴 -> 이미 프로젝트에 등록되어있으면 그 id를 반환하기 때문에 addIssueToProject를 호출해도 무방
+        const itemId = await addIssueToProject(octokit, projectId, issue.node_id);
+        // 이슈 상태를 특정 상태로 업데이트
         await updateStatusField(octokit, projectId, itemId, fieldId, statusOptionId);
-        (0,core.info)(`이슈가 프로젝트에 등록되고 ${targetColumn}로 설정되었습니다.`);
+        (0,core.info)(`이슈 #${issueNumber}가 '${targetColumn}' 상태로 이동되었습니다.`);
     }
     catch (error) {
         if (error instanceof Error) {
             (0,core.setFailed)(error.message);
-        }
-        else {
-            (0,core.setFailed)('Unknown error occurred');
         }
     }
 }
