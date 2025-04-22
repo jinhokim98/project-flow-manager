@@ -1,9 +1,17 @@
 name: "Issue to Project"
-description: "Add new issues to a GitHub Project and set to To Do"
+description: "Add new issues to a GitHub Project and set to a Target Column"
 inputs:
   github_token:
     description: "GitHub Token"
     required: true
+  owner:
+    description: "Organization or User Name"
+    required: true
+  project_number:
+    required: true
+  target_column:
+    description: "Target Column Name"
+    required: false
 runs:
   using: "node16"
   main: "dist/index.js"
