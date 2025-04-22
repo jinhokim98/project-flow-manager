@@ -34487,10 +34487,8 @@ async function run() {
     try {
         const token = (0,core.getInput)('github_token');
         const projectOwner = (0,core.getInput)('project_owner');
-        const projectNumber = parseInt((0,core.getInput)('project_number'), 10);
+        const projectNumber = parseInt((0,core.getInput)('project_number'));
         const targetColumn = (0,core.getInput)('target_column');
-        (0,core.info)(`Project Owner: ${projectOwner}`);
-        (0,core.info)(`Project Number: ${projectNumber}`);
         const octokit = (0,github.getOctokit)(token);
         // refs/heads/feature/123-add-logic 같은 브랜치 이름에서 123을 추출
         const branchName = github.context.ref.replace('refs/heads/', '');
@@ -34498,25 +34496,18 @@ async function run() {
         if (!issueNumberMatch) {
             throw new Error('브랜치 이름에서 이슈 번호를 추출할 수 없습니다.');
         }
-        const issueNumber = parseInt(issueNumberMatch[1], 10);
-        (0,core.info)(`Branch Name: ${branchName}`);
-        (0,core.info)(`Extracted Issue Number: ${issueNumber}`);
+        const issueNumber = parseInt(issueNumberMatch[1]);
         const { data: issue } = await octokit.rest.issues.get({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
             issue_number: issueNumber,
         });
-        (0,core.info)(`Issue Node ID: ${issue.node_id}`);
         // target column id를 얻어오는 과정
         const projectId = await getProjectId(octokit, projectOwner, projectNumber);
-        (0,core.info)(`Project ID: ${projectId}`);
         const { fieldId, options } = await getProjectFieldId(octokit, projectId);
         const statusOptionId = getProjectOptionId(options, targetColumn);
-        (0,core.info)(`Field ID: ${fieldId}`);
-        (0,core.info)(`Status Option ID: ${getProjectOptionId(options, targetColumn)}`);
         // 이슈 item id를 얻어옴 -> 이미 프로젝트에 등록되어있으면 그 id를 반환하기 때문에 addIssueToProject를 호출해도 무방
         const itemId = await addIssueToProject(octokit, projectId, issue.node_id);
-        (0,core.info)(`Item ID: ${itemId}`);
         // 이슈 상태를 특정 상태로 업데이트
         await updateStatusField(octokit, projectId, itemId, fieldId, statusOptionId);
         (0,core.info)(`이슈 #${issueNumber}가 '${targetColumn}' 상태로 이동되었습니다.`);
