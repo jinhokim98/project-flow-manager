@@ -1,6 +1,167 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 8528:
+/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ addIssueToProject)
+/* harmony export */ });
+const core = __nccwpck_require__(7484);
+
+async function addIssueToProject(octokit, projectId, issueNodeId) {
+  const mutation = `
+    mutation($projectId: ID!, $contentId: ID!) {
+      addProjectV2ItemById(input: {
+        projectId: $projectId
+        contentId: $contentId
+      }) {
+        item {
+          id
+        }
+      }
+    }
+  `;
+
+  const response = await octokit.graphql(mutation, {
+    projectId,
+    contentId: issueNodeId,
+    headers: {
+      authorization: `Bearer ${core.getInput("github-token")}`,
+    },
+  });
+
+  return response.addProjectV2ItemById.item.id;
+}
+
+
+/***/ }),
+
+/***/ 6018:
+/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ getProjectId)
+/* harmony export */ });
+const core = __nccwpck_require__(7484);
+
+async function getProjectId(octokit, ownerType) {
+  const projectNumber = parseInt(core.getInput("project_number"));
+
+  const query = `
+  query($login: String!, $number: Int!) {
+    ${ownerType === "Organization" ? "organization" : "user"}(login: $login) {
+      projectV2(number: $number) {
+        id
+      }
+    }
+  }
+`;
+
+  const response = await octokit.graphql(query, {
+    login: owner,
+    number: projectNumber,
+    headers: { authorization: `Bearer ${core.getInput("github-token")}` },
+  });
+
+  return ownerType === "Organization" ? response.organization.projectV2.id : response.user.projectV2.id;
+}
+
+
+/***/ }),
+
+/***/ 1585:
+/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ getStatusFieldId)
+/* harmony export */ });
+const core = __nccwpck_require__(7484);
+
+async function getStatusFieldId(octokit, projectId) {
+  const query = `
+    query($projectId: ID!) {
+      node(id: $projectId) {
+        ... on ProjectV2 {
+          fields(first: 50) {
+            nodes {
+              id
+              name
+              dataType
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const response = await octokit.graphql(query, {
+    projectId,
+    headers: {
+      authorization: `Bearer ${core.getInput("github-token")}`,
+    },
+  });
+
+  const fields = response.node.fields.nodes;
+  const statusField = fields.find((field) => field.name === "Status");
+
+  if (!statusField) {
+    throw new Error("'Status' 필드를 찾을 수 없습니다.");
+  }
+
+  return statusField.id;
+}
+
+
+/***/ }),
+
+/***/ 886:
+/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ getStatusOptionId)
+/* harmony export */ });
+async function getStatusOptionId(octokit, statusFieldId, targetColumn) {
+  const query = `
+    query($fieldId: ID!) {
+      node(id: $fieldId) {
+        ... on ProjectV2SingleSelectField {
+          options {
+            id
+            name
+          }
+        }
+      }
+    }
+  `;
+
+  const response = await octokit.graphql(query, {
+    fieldId: statusFieldId,
+    headers: {
+      authorization: `Bearer ${core.getInput("github-token")}`,
+    },
+  });
+
+  const option = response.node.options.find((opt) => opt.name.toLowerCase() === targetColumn.toLowerCase());
+
+  if (!option) {
+    throw new Error(`${targetColumn} 옵션을 찾을 수 없습니다.`);
+  }
+
+  return option.id;
+}
+
+
+/***/ }),
+
 /***/ 4914:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -34482,29 +34643,85 @@ module.exports = /*#__PURE__*/JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__nccwpck_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__nccwpck_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-const core = __nccwpck_require__(7484);
+const index_core = __nccwpck_require__(7484);
 const github = __nccwpck_require__(3228);
 
+const getProjectId = __nccwpck_require__(6018);
+const addIssueToProject = __nccwpck_require__(8528);
+const getStatusFieldId = __nccwpck_require__(1585);
+const getStatusOptionId = __nccwpck_require__(886);
+
+async function resolveOwnerType(octokit, owner) {
+  const res = await octokit.rest.users.getByUsername({ username: owner });
+  return res.data.type; // "User" or "Organization"
+}
+
 async function run() {
-  const token = core.getInput("github_token");
-  const octokit = github.getOctokit(token);
-  const context = github.context;
+  try {
+    const token = index_core.getInput("github-token");
+    const octokit = github.getOctokit(token);
+    const context = github.context;
+    const targetColumn = index_core.getInput("target_column") ?? "Todo";
 
-  if (context.eventName !== "issues" || context.payload.action !== "opened") {
-    core.info("Not an issue opened event, skipping.");
-    return;
+    const issueId = context.payload.issue.node_id;
+    const owner = index_core.getInput("owner");
+
+    // 1. project가 user인지 organization인지 확인
+    const ownerType = await resolveOwnerType(octokit, owner);
+
+    // 2. 프로젝트 ID 가져오기
+    const projectId = await getProjectId(octokit, ownerType);
+
+    // 3. 이슈를 프로젝트에 등록
+    const itemId = await addIssueToProject(octokit, projectId, issueId);
+
+    // 4. Status 필드 ID 가져오기
+    const fieldId = await getStatusFieldId(octokit, projectId);
+
+    // 5. Status Option ID 가져오기
+    const statusOptionId = await getStatusOptionId(octokit, fieldId, targetColumn);
+
+    // 6. Status를 target column으로 설정
+    await updateStatusField(octokit, projectId, itemId, fieldId, targetColumn);
+
+    index_core.info(`이슈가 프로젝트에 등록되고 ${targetColumn}로 설정되었습니다.`);
+  } catch (error) {
+    index_core.setFailed(error.message);
   }
-
-  const issue = context.payload.issue;
-  core.info(`New issue created: ${issue.title}`);
-
-  // 여기에 Project 등록 & status 설정 코드가 들어갈 예정
 }
 
 run();
