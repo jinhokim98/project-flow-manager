@@ -14,6 +14,9 @@ async function run() {
     const projectNumber = parseInt(getInput('project_number'), 10);
     const targetColumn = getInput('target_column');
 
+    info(`Project Owner: ${projectOwner}`);
+    info(`Project Number: ${projectNumber}`);
+
     const octokit = getOctokit(token);
 
     // refs/heads/feature/123-add-logic 같은 브랜치 이름에서 123을 추출
@@ -26,19 +29,30 @@ async function run() {
 
     const issueNumber = parseInt(issueNumberMatch[1], 10);
 
+    info(`Branch Name: ${branchName}`);
+    info(`Extracted Issue Number: ${issueNumber}`);
+
     const {data: issue} = await octokit.rest.issues.get({
       owner: context.repo.owner,
       repo: context.repo.repo,
       issue_number: issueNumber,
     });
 
+    info(`Issue Node ID: ${issue.node_id}`);
+
     // target column id를 얻어오는 과정
     const projectId = await getProjectId(octokit, projectOwner, projectNumber);
+    info(`Project ID: ${projectId}`);
+
     const {fieldId, options} = await getProjectFieldId(octokit, projectId);
     const statusOptionId = getProjectOptionId(options, targetColumn);
 
+    info(`Field ID: ${fieldId}`);
+    info(`Status Option ID: ${getProjectOptionId(options, targetColumn)}`);
+
     // 이슈 item id를 얻어옴 -> 이미 프로젝트에 등록되어있으면 그 id를 반환하기 때문에 addIssueToProject를 호출해도 무방
     const itemId = await addIssueToProject(octokit, projectId, issue.node_id);
+    info(`Item ID: ${itemId}`);
 
     // 이슈 상태를 특정 상태로 업데이트
     await updateStatusField(octokit, projectId, itemId, fieldId, statusOptionId);
