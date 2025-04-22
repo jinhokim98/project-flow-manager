@@ -32713,6 +32713,51 @@ async function getStatusOptionId(octokit, statusFieldId, targetColumn) {
 
 /***/ }),
 
+/***/ 1596:
+/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ updateStatusField)
+/* harmony export */ });
+const core = __nccwpck_require__(7484);
+
+async function updateStatusField(octokit, projectId, itemId, fieldId, optionId) {
+  const mutation = `
+    mutation($input: UpdateProjectV2ItemFieldValueInput!) {
+      updateProjectV2ItemFieldValue(input: $input) {
+        projectV2Item {
+          id
+        }
+      }
+    }
+  `;
+
+  const variables = {
+    input: {
+      projectId,
+      itemId,
+      fieldId,
+      value: {
+        singleSelectOptionId: optionId,
+      },
+    },
+  };
+
+  const response = await octokit.graphql(mutation, {
+    ...variables,
+    headers: {
+      authorization: `Bearer ${core.getInput("github_token")}`,
+    },
+  });
+
+  return response.updateProjectV2ItemFieldValue.projectV2Item.id;
+}
+
+
+/***/ }),
+
 /***/ 2078:
 /***/ ((module) => {
 
@@ -34684,6 +34729,7 @@ const getProjectId = __nccwpck_require__(9917);
 const addIssueToProject = __nccwpck_require__(633);
 const getStatusFieldId = __nccwpck_require__(3058);
 const getStatusOptionId = __nccwpck_require__(2691);
+const updateStatusField = __nccwpck_require__(1596);
 
 async function resolveProjectType(octokit, projectName) {
   const res = await octokit.rest.users.getByUsername({ username: projectName });
@@ -34716,7 +34762,7 @@ async function run() {
     const statusOptionId = await getStatusOptionId(octokit, fieldId, targetColumn);
 
     // 6. Status를 target column으로 설정
-    await updateStatusField(octokit, projectId, itemId, fieldId, targetColumn);
+    await updateStatusField(octokit, projectId, itemId, fieldId, statusOptionId);
 
     src_core.info(`이슈가 프로젝트에 등록되고 ${targetColumn}로 설정되었습니다.`);
   } catch (error) {
