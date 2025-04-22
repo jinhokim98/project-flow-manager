@@ -7,10 +7,11 @@ jobs:
   assign:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Run custom action
-        uses: ./
+        uses: ./actions
         with:
           github_token: ${{ secrets.SECRET_GITHUB_TOKEN }}
           project_owner: "jinhokim98"
