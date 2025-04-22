@@ -1,6 +1,7 @@
 const core = require("@actions/core");
 
 async function getProjectId(octokit, projectType) {
+  const projectOwner = core.getInput("project_owner");
   const projectNumber = parseInt(core.getInput("project_number"));
 
   const query = `
@@ -14,7 +15,7 @@ async function getProjectId(octokit, projectType) {
 `;
 
   const response = await octokit.graphql(query, {
-    login: owner,
+    login: projectOwner,
     number: projectNumber,
     headers: { authorization: `Bearer ${core.getInput("github_token")}` },
   });
