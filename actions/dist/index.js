@@ -32553,13 +32553,8 @@ function wrappy (fn, cb) {
 /***/ }),
 
 /***/ 633:
-/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
-__nccwpck_require__.r(__webpack_exports__);
-/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ addIssueToProject)
-/* harmony export */ });
 const core = __nccwpck_require__(7484);
 
 async function addIssueToProject(octokit, projectId, issueNodeId) {
@@ -32587,17 +32582,14 @@ async function addIssueToProject(octokit, projectId, issueNodeId) {
   return response.addProjectV2ItemById.item.id;
 }
 
+module.exports = addIssueToProject;
+
 
 /***/ }),
 
 /***/ 9917:
-/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
-__nccwpck_require__.r(__webpack_exports__);
-/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ getProjectId)
-/* harmony export */ });
 const core = __nccwpck_require__(7484);
 
 async function getProjectId(octokit, projectType) {
@@ -32622,17 +32614,14 @@ async function getProjectId(octokit, projectType) {
   return projectType === "Organization" ? response.organization.projectV2.id : response.user.projectV2.id;
 }
 
+module.exports = getProjectId;
+
 
 /***/ }),
 
 /***/ 3058:
-/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
-__nccwpck_require__.r(__webpack_exports__);
-/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ getStatusFieldId)
-/* harmony export */ });
 const core = __nccwpck_require__(7484);
 
 async function getStatusFieldId(octokit, projectId) {
@@ -32669,17 +32658,14 @@ async function getStatusFieldId(octokit, projectId) {
   return statusField.id;
 }
 
+module.exports = getStatusFieldId;
+
 
 /***/ }),
 
 /***/ 2691:
-/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+/***/ ((module) => {
 
-"use strict";
-__nccwpck_require__.r(__webpack_exports__);
-/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ getStatusOptionId)
-/* harmony export */ });
 async function getStatusOptionId(octokit, statusFieldId, targetColumn) {
   const query = `
     query($fieldId: ID!) {
@@ -32710,17 +32696,14 @@ async function getStatusOptionId(octokit, statusFieldId, targetColumn) {
   return option.id;
 }
 
+module.exports = getStatusOptionId;
+
 
 /***/ }),
 
 /***/ 1596:
-/***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
-__nccwpck_require__.r(__webpack_exports__);
-/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ updateStatusField)
-/* harmony export */ });
 const core = __nccwpck_require__(7484);
 
 async function updateStatusField(octokit, projectId, itemId, fieldId, optionId) {
@@ -32754,6 +32737,8 @@ async function updateStatusField(octokit, projectId, itemId, fieldId, optionId) 
 
   return response.updateProjectV2ItemFieldValue.projectV2Item.id;
 }
+
+module.exports = updateStatusField;
 
 
 /***/ }),
@@ -34688,34 +34673,6 @@ module.exports = /*#__PURE__*/JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
