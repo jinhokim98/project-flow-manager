@@ -1,11 +1,11 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
 
-const getProjectId = require("./getProjectId");
-const addIssueToProject = require("./addIssueToProject");
-const getProjectFieldId = require("./getProjectFieldId");
-const getProjectOptionId = require("./getProjectOptionId");
-const updateStatusField = require("./updateStatusField");
+const getProjectId = require("../utils/getProjectId");
+const addIssueToProject = require("../utils/addIssueToProject");
+const getProjectFieldId = require("../utils/getProjectFieldId");
+const getProjectOptionId = require("../utils/getProjectOptionId");
+const updateStatusField = require("../utils/updateStatusField");
 
 async function resolveProjectType(octokit, projectOwner) {
   const res = await octokit.rest.users.getByUsername({ username: projectOwner });
