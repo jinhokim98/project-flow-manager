@@ -49,12 +49,12 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony export */ });
 const core = __nccwpck_require__(7484);
 
-async function getProjectId(octokit, ownerType) {
+async function getProjectId(octokit, projectType) {
   const projectNumber = parseInt(core.getInput("project_number"));
 
   const query = `
   query($login: String!, $number: Int!) {
-    ${ownerType === "Organization" ? "organization" : "user"}(login: $login) {
+    ${projectType === "Organization" ? "organization" : "user"}(login: $login) {
       projectV2(number: $number) {
         id
       }
@@ -68,7 +68,7 @@ async function getProjectId(octokit, ownerType) {
     headers: { authorization: `Bearer ${core.getInput("github-token")}` },
   });
 
-  return ownerType === "Organization" ? response.organization.projectV2.id : response.user.projectV2.id;
+  return projectType === "Organization" ? response.organization.projectV2.id : response.user.projectV2.id;
 }
 
 
@@ -34685,8 +34685,8 @@ const addIssueToProject = __nccwpck_require__(8528);
 const getStatusFieldId = __nccwpck_require__(1585);
 const getStatusOptionId = __nccwpck_require__(886);
 
-async function resolveOwnerType(octokit, owner) {
-  const res = await octokit.rest.users.getByUsername({ username: owner });
+async function resolveProjectType(octokit, projectName) {
+  const res = await octokit.rest.users.getByUsername({ username: projectName });
   return res.data.type; // "User" or "Organization"
 }
 
@@ -34698,13 +34698,13 @@ async function run() {
     const targetColumn = index_core.getInput("target_column") ?? "Todo";
 
     const issueId = context.payload.issue.node_id;
-    const owner = index_core.getInput("owner");
+    const projectName = index_core.getInput("project_name");
 
     // 1. project가 user인지 organization인지 확인
-    const ownerType = await resolveOwnerType(octokit, owner);
+    const projectType = await resolveProjectType(octokit, projectName);
 
     // 2. 프로젝트 ID 가져오기
-    const projectId = await getProjectId(octokit, ownerType);
+    const projectId = await getProjectId(octokit, projectType);
 
     // 3. 이슈를 프로젝트에 등록
     const itemId = await addIssueToProject(octokit, projectId, issueId);
