@@ -19,9 +19,13 @@ type UserProjectResponse = {
 
 type ProjectIdResponse = OrganizationProjectResponse | UserProjectResponse;
 
-export async function getProjectId(octokit: OctokitType, projectType: string) {
-  const projectOwner = getInput('project_owner');
-  const projectNumber = parseInt(getInput('project_number'));
+async function getProjectType(octokit: OctokitType, projectOwner: string) {
+  const res = await octokit.rest.users.getByUsername({username: projectOwner});
+  return res.data.type; // "User" or "Organization"
+}
+
+export async function getProjectId(octokit: OctokitType, projectOwner: string, projectNumber: number) {
+  const projectType = await getProjectType(octokit, projectOwner);
 
   const query = `
     query($login: String!, $number: Int!) {
