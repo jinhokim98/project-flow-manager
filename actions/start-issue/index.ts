@@ -11,7 +11,7 @@ async function run() {
   try {
     const token = getInput('github_token');
     const projectOwner = getInput('project_owner');
-    const projectNumber = parseInt(getInput('project_number'));
+    const projectNumber = parseInt(getInput('project_number'), 10);
     const targetColumn = getInput('target_column');
 
     const octokit = getOctokit(token);

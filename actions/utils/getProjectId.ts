@@ -1,4 +1,5 @@
 import {OctokitType} from '../type';
+import {info} from '@actions/core';
 
 type OrganizationProjectResponse = {
   organization: {
@@ -25,6 +26,8 @@ async function getProjectType(octokit: OctokitType, projectOwner: string) {
 
 export async function getProjectId(octokit: OctokitType, token: string, projectOwner: string, projectNumber: number) {
   const projectType = await getProjectType(octokit, projectOwner);
+  info(`Project Type: ${projectType}`);
+  info(`GraphQL Query: ${projectType === 'Organization' ? 'organization' : 'user'}(login: ${projectOwner})`);
 
   const query = `
     query($login: String!, $number: Int!) {
