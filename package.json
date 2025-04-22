@@ -8,7 +8,8 @@
     "lint:fix": "eslint actions --ext .ts --fix",
     "format": "prettier --write 'actions/**/*.{ts,json,md}'",
     "build:create-issue": "ncc build actions/create-issue/index.ts -o actions/create-issue/dist --license licenses.txt",
-    "build": "npm run build:create-issue"
+    "build:start-issue": "ncc build actions/start-issue/index.ts -o actions/start-issue/dist --license licenses.txt",
+    "build": "npm run build:create-issue && npm run build:start-issue"
   },
   "dependencies": {
     "@actions/core": "^1.10.0",
