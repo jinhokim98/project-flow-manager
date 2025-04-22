@@ -1,0 +1,15 @@
+name: "Issue to Project Auto Assign"
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  assign:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run custom action
+        uses: ./.github/actions/issue-to-project
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}

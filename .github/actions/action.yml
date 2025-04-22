@@ -1,0 +1,9 @@
+name: "Issue to Project"
+description: "Add new issues to a GitHub Project and set to To Do"
+inputs:
+  github_token:
+    description: "GitHub Token"
+    required: true
+runs:
+  using: "node16"
+  main: "dist/index.js"
