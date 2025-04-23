@@ -16,7 +16,7 @@ async function run() {
     const octokit = getOctokit(token);
 
     // 1. 이슈 번호를 브랜치 이름에서 추출
-    const issueNumber = extractIssueNumberFromBranch();
+    const issueNumber = extractIssueNumberFromBranch(context.ref);
     const {data: issue} = await octokit.rest.issues.get({
       owner: context.repo.owner,
       repo: context.repo.repo,
