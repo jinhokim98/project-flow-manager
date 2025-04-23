@@ -1,0 +1,10 @@
+name: 'Close Issue on PR Merge'
+description: 'PR이 머지되면 관련된 이슈를 Close 합니다.'
+inputs:
+  github_token:
+    description: 'GitHub Token'
+    required: true
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
