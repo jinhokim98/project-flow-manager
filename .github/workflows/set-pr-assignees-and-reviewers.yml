@@ -1,0 +1,17 @@
+name: Set PR Assignees and Reviewers
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  sync-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Set PR Assignees and Reviewers
+        uses: ./actions/set-pr-assignees-and-reviewers
+        with:
+          github_token: ${{ secrets.SECRET_GITHUB_TOKEN }}
+          assignees: 'jinhokim98'
