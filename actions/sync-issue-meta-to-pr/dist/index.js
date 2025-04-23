@@ -34338,10 +34338,9 @@ var core = __nccwpck_require__(7484);
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __nccwpck_require__(3228);
 ;// CONCATENATED MODULE: ./actions/utils/extractIssueNumberFromBranch.ts
-
 // refs/heads/feature/123-add-logic 같은 브랜치 이름에서 123을 추출
-function extractIssueNumberFromBranch() {
-    const branchName = github.context.ref.replace('refs/heads/', '');
+function extractIssueNumberFromBranch(ref) {
+    const branchName = ref.replace('refs/heads/', '');
     const issueNumberMatch = branchName.match(/(\d+)/);
     if (!issueNumberMatch) {
         throw new Error('브랜치 이름에서 이슈 번호를 추출할 수 없습니다.');
@@ -34562,8 +34561,10 @@ async function run() {
         const octokit = (0,github.getOctokit)(token);
         const repositoryOwner = github.context.repo.owner;
         const repositoryName = github.context.repo.repo;
-        const issueNumber = extractIssueNumberFromBranch();
+        const issueNumber = extractIssueNumberFromBranch(github.context.payload.pull_request?.head.ref);
         const prNumber = github.context.payload.pull_request?.number;
+        (0,core.info)(`이슈 번호: ${issueNumber}`);
+        (0,core.info)(`PR 번호: ${prNumber}`);
         if (!prNumber) {
             throw new Error('이 워크플로우는 PR 이벤트에서만 실행되어야 합니다.');
         }

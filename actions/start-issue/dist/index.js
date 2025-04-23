@@ -34483,10 +34483,9 @@ async function getProjectMetadata(octokit, token, projectOwner, projectNumber, t
 }
 
 ;// CONCATENATED MODULE: ./actions/utils/extractIssueNumberFromBranch.ts
-
 // refs/heads/feature/123-add-logic 같은 브랜치 이름에서 123을 추출
-function extractIssueNumberFromBranch() {
-    const branchName = github.context.ref.replace('refs/heads/', '');
+function extractIssueNumberFromBranch(ref) {
+    const branchName = ref.replace('refs/heads/', '');
     const issueNumberMatch = branchName.match(/(\d+)/);
     if (!issueNumberMatch) {
         throw new Error('브랜치 이름에서 이슈 번호를 추출할 수 없습니다.');
@@ -34510,7 +34509,7 @@ async function run() {
         const targetColumn = (0,core.getInput)('target_column');
         const octokit = (0,github.getOctokit)(token);
         // 1. 이슈 번호를 브랜치 이름에서 추출
-        const issueNumber = extractIssueNumberFromBranch();
+        const issueNumber = extractIssueNumberFromBranch(github.context.ref);
         const { data: issue } = await octokit.rest.issues.get({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
