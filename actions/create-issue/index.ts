@@ -1,11 +1,9 @@
 import {getInput, setFailed, info} from '@actions/core';
 import {getOctokit, context} from '@actions/github';
 
-import {getProjectId} from '../utils/getProjectId';
 import {addIssueToProject} from '../utils/addIssueToProject';
-import {getProjectFieldId} from '../utils/getProjectFieldId';
-import {getProjectOptionId} from '../utils/getProjectOptionId';
 import {updateStatusField} from '../utils/updateStatusField';
+import {getProjectMetadata} from '../utils/getProjectMetadata';
 
 async function run() {
   try {
@@ -15,21 +13,21 @@ async function run() {
     const projectNumber = parseInt(getInput('project_number'), 10);
 
     const octokit = getOctokit(token);
-    const issueId = context.payload.issue?.node_id;
 
-    // 1. 프로젝트 ID 가져오기
-    const projectId = await getProjectId(octokit, token, projectOwner, projectNumber);
+    // 1. projectId, fieldId, statusOptionId을 가져오는 과정
+    const {projectId, fieldId, statusOptionId} = await getProjectMetadata(
+      octokit,
+      token,
+      projectOwner,
+      projectNumber,
+      targetColumn,
+    );
 
     // 2. 이슈를 프로젝트에 등록
+    const issueId = context.payload.issue?.node_id;
     const itemId = await addIssueToProject(octokit, token, projectId, issueId);
 
-    // 3. Status 필드 ID 가져오기
-    const {fieldId, options} = await getProjectFieldId(octokit, token, projectId);
-
-    // 4. Status Option ID 가져오기
-    const statusOptionId = getProjectOptionId(options, targetColumn);
-
-    // 5. Status를 target column으로 설정
+    // 3. Status를 target column으로 설정
     await updateStatusField(octokit, token, projectId, itemId, fieldId, statusOptionId);
 
     info(`이슈가 프로젝트에 등록되고 ${targetColumn}로 설정되었습니다.`);
