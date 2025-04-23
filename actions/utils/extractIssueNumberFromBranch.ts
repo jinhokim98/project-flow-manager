@@ -1,8 +1,6 @@
-import {context} from '@actions/github';
-
 // refs/heads/feature/123-add-logic 같은 브랜치 이름에서 123을 추출
-export function extractIssueNumberFromBranch() {
-  const branchName = context.ref.replace('refs/heads/', '');
+export function extractIssueNumberFromBranch(ref: string) {
+  const branchName = ref.replace('refs/heads/', '');
   const issueNumberMatch = branchName.match(/(\d+)/);
 
   if (!issueNumberMatch) {
