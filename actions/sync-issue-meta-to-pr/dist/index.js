@@ -34563,8 +34563,6 @@ async function run() {
         const repositoryName = github.context.repo.repo;
         const issueNumber = extractIssueNumberFromBranch(github.context.payload.pull_request?.head.ref);
         const prNumber = github.context.payload.pull_request?.number;
-        (0,core.info)(`이슈 번호: ${issueNumber}`);
-        (0,core.info)(`PR 번호: ${prNumber}`);
         if (!prNumber) {
             throw new Error('이 워크플로우는 PR 이벤트에서만 실행되어야 합니다.');
         }

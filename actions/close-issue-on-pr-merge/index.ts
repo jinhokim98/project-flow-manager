@@ -6,7 +6,7 @@ async function run() {
   try {
     const token = getInput('github_token');
     const octokit = getOctokit(token);
-    const issueNumber = extractIssueNumberFromBranch();
+    const issueNumber = extractIssueNumberFromBranch(context.payload.pull_request?.head.ref);
 
     const {owner, repo} = context.repo;
     await octokit.rest.issues.update({

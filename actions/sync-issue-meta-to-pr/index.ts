@@ -20,9 +20,6 @@ async function run() {
     const issueNumber = extractIssueNumberFromBranch(context.payload.pull_request?.head.ref);
     const prNumber = context.payload.pull_request?.number;
 
-    info(`이슈 번호: ${issueNumber}`);
-    info(`PR 번호: ${prNumber}`);
-
     if (!prNumber) {
       throw new Error('이 워크플로우는 PR 이벤트에서만 실행되어야 합니다.');
     }
