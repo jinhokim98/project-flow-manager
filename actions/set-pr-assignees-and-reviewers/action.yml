@@ -1,0 +1,20 @@
+name: 'set-pr-assignees-and-reviewers'
+description: 'PR Assignees와 Reviewers를 자동으로 설정합니다.'
+
+inputs:
+  github_token:
+    required: true
+    description: 'GitHub token'
+  assignees:
+    required: false
+    description: '유저 이름을 쉼표로 구분하여 입력하세요. (예: user1,user2), 설정하지 않으면 기본값은 PR 작성자입니다.'
+  reviewers:
+    required: false
+    description: '리뷰어 이름을 쉼표로 구분하여 입력하세요. (예: reviewer1,reviewer2)'
+  team_reviewers:
+    required: false
+    description: '팀 이름을 쉼표로 구분하여 입력하세요. (예: team1,team2)'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
