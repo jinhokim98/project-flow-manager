@@ -1,0 +1,17 @@
+name: 'sync-issue-meta-to-pr'
+description: 'PR 생성 시 이슈의 메타데이터(label, milestone)를 PR로 복사하고 이슈와 PR을 프로젝트의 특정 상태로 업데이트합니다.'
+inputs:
+  github_token:
+    description: 'GitHub Token, project에 접근할 수 있는 권한이 있어야 합니다'
+    required: true
+  project_owner:
+    description: 'Organization or User'
+    required: true
+  project_number:
+    required: true
+  target_column:
+    description: 'Target Column Name'
+    required: true
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

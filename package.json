@@ -9,7 +9,8 @@
     "format": "prettier --write 'actions/**/*.{ts,json,md}'",
     "build:create-issue": "ncc build actions/create-issue/index.ts -o actions/create-issue/dist --license licenses.txt",
     "build:start-issue": "ncc build actions/start-issue/index.ts -o actions/start-issue/dist --license licenses.txt",
-    "build": "npm run build:create-issue && npm run build:start-issue"
+    "build:sync-issue-meta-to-pr": "ncc build actions/sync-issue-meta-to-pr/index.ts -o actions/sync-issue-meta-to-pr/dist --license licenses.txt",
+    "build": "npm run build:create-issue && npm run build:start-issue && npm run build:sync-issue-meta-to-pr"
   },
   "dependencies": {
     "@actions/core": "^1.10.0",
