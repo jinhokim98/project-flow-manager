@@ -1,0 +1,19 @@
+name: Sync Issue Meta to PR
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  sync-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Sync Issue
+        uses: ./actions/sync-issue-meta-to-pr
+        with:
+          github_token: ${{ secrets.SECRET_GITHUB_TOKEN }}
+          project_owner: 'jinhokim98'
+          project_number: 2
+          target_column: 'In Review'
