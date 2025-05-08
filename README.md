@@ -2,12 +2,13 @@
 
 `project-flow-manager`는 GitHub Project로 프로젝트를 관리할 때 사용하면 좋을 액션 모음입니다. 현재는 이슈 생성과 머지까지 구현했지만 앞으로 리뷰어 등록, 머지 이후 액션, 릴리즈 노트 자동작성 등을 만들어보고 싶습니다.
 
-| 액션 이름                                                                                                             | 설명                                                                                                   |
-| --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| [`project-flow-add-issue-to-project`](https://github.com/marketplace/actions/project-flow-add-issue-to-project)       | 이슈 생성 시 지정된 GitHub Project에 이슈를 자동으로 추가하며 지정한 특정 상태(Todo)로 업데이트합니다. |
-| [`project-flow-start-issue`](https://github.com/marketplace/actions/project-flow-start-issue)                         | 브랜치 생성 시 관련 이슈의 상태를 프로젝트에서 지정한 특정 상태(In Progress)로 이동시킵니다.           |
-| [`project-flow-sync-issue-meta-to-pr`](https://github.com/marketplace/actions/project-flow-sync-issue-meta-to-pr)     | PR 생성 시 이슈의 메타 정보(레이블, 마일스톤 등)를 복사하고 PR과 이슈를 특정 상태로 업데이트합니다.    |
-| [`project-flow-close-issue-on-pr-merge`](https://github.com/marketplace/actions/project-flow-close-issue-on-pr-merge) | PR이 머지되면 관련된 이슈를 자동으로 Close 합니다.                                                     |
+| 액션 이름                                                                                                                           | 설명                                                                                                   |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| [`project-flow-add-issue-to-project`](https://github.com/marketplace/actions/project-flow-add-issue-to-project)                     | 이슈 생성 시 지정된 GitHub Project에 이슈를 자동으로 추가하며 지정한 특정 상태(Todo)로 업데이트합니다. |
+| [`project-flow-start-issue`](https://github.com/marketplace/actions/project-flow-start-issue)                                       | 브랜치 생성 시 관련 이슈의 상태를 프로젝트에서 지정한 특정 상태(In Progress)로 이동시킵니다.           |
+| [`project-flow-sync-issue-meta-to-pr`](https://github.com/marketplace/actions/project-flow-sync-issue-meta-to-pr)                   | PR 생성 시 이슈의 메타 정보(레이블, 마일스톤 등)를 복사하고 PR과 이슈를 특정 상태로 업데이트합니다.    |
+| [`project-flow-set-pr-assignees-and-reviewers`](https://github.com/marketplace/actions/project-flow-set-pr-assignees-and-reviewers) | PR이 생성될 때 지정된 assignees와 reviewer를 자동으로 등록합니다.                                      |
+| [`project-flow-close-issue-on-pr-merge`](https://github.com/marketplace/actions/project-flow-close-issue-on-pr-merge)               | PR이 머지되면 관련된 이슈를 자동으로 Close 합니다.                                                     |
 
 ---
 
@@ -18,7 +19,8 @@
 1. 이슈 생성 → 프로젝트에 자동 등록, `Todo`로 변경 (다른 상태 가능)
 2. 이슈 기반 브랜치 생성 → 이슈 상태를 `In Progress`로 변경 (다른 상태 가능)
 3. PR 생성 → 이슈 메타데이터(레이블, 마일스톤) PR에 복사 및 이슈와 PR 지정한 상태로 변경 (ex: `In Review`)
-4. PR 머지 → 이슈 Close (default 브랜치로 merge가 아니어도 작동)
+4. PR 생성 -> 지정한 assignee와 reviewer가 PR에 지정
+5. PR 머지 → 이슈 Close (default 브랜치로 merge가 아니어도 작동)
 
 ---
 
