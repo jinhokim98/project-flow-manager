@@ -1,20 +1,19 @@
-name: Start Issue
-
+name: Sync Issue Meta to PR
 on:
-  create:
+  pull_request:
+    types: [opened]
 
 jobs:
-  start-issue:
-    if: github.ref_type == 'branch' && contains(github.ref, 'feature')
+  sync-issue:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run Start Issue
-        uses: jinhokim98/project-flow-start-issue@v1
+      - name: Run Sync Issue
+        uses: jinhokim98/project-flow-sync-issue-meta-to-pr@v1
         with:
           github_token: ${{ secrets.SECRET_GITHUB_TOKEN }}
           project_owner: 'jinhokim98'
           project_number: 2
-          target_column: 'In Progress'
+          target_column: 'In Review'

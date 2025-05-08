@@ -34337,151 +34337,6 @@ var __webpack_exports__ = {};
 var core = __nccwpck_require__(7484);
 // EXTERNAL MODULE: ./node_modules/@actions/github/lib/github.js
 var github = __nccwpck_require__(3228);
-;// CONCATENATED MODULE: ./actions/utils/updateStatusField.ts
-async function updateStatusField(octokit, token, projectId, itemId, fieldId, optionId) {
-    const mutation = `
-    mutation($input: UpdateProjectV2ItemFieldValueInput!) {
-      updateProjectV2ItemFieldValue(input: $input) {
-        projectV2Item {
-          id
-        }
-      }
-    }
-  `;
-    const variables = {
-        input: {
-            projectId,
-            itemId,
-            fieldId,
-            value: {
-                singleSelectOptionId: optionId,
-            },
-        },
-    };
-    const response = await octokit.graphql(mutation, {
-        ...variables,
-        headers: {
-            authorization: `Bearer ${token}`,
-        },
-    });
-    return response.updateProjectV2ItemFieldValue.projectV2Item.id;
-}
-
-;// CONCATENATED MODULE: ./actions/utils/addIssueToProject.ts
-async function addIssueToProject(octokit, token, projectId, issueNodeId) {
-    const mutation = `
-    mutation($projectId: ID!, $contentId: ID!) {
-      addProjectV2ItemById(input: {
-        projectId: $projectId
-        contentId: $contentId
-      }) {
-        item {
-          id
-        }
-      }
-    }
-  `;
-    const response = await octokit.graphql(mutation, {
-        projectId,
-        contentId: issueNodeId,
-        headers: {
-            authorization: `Bearer ${token}`,
-        },
-    });
-    return response.addProjectV2ItemById.item.id;
-}
-
-;// CONCATENATED MODULE: ./actions/utils/getProjectFieldId.ts
-async function getProjectFieldId(octokit, token, projectId) {
-    const query = `
-    query($projectId: ID!) {
-      node(id: $projectId) {
-        ... on ProjectV2 {
-          fields(first: 50) {
-            nodes {
-              ... on ProjectV2SingleSelectField {
-                id
-                name
-                options {
-                  id
-                  name
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  `;
-    const response = await octokit.graphql(query, {
-        projectId,
-        headers: {
-            authorization: `Bearer ${token}`,
-        },
-    });
-    const { nodes: fields } = response.node.fields;
-    const specificField = fields.find(field => field.name === 'Status');
-    if (!specificField) {
-        throw new Error("'Status' 필드를 찾을 수 없습니다.");
-    }
-    return {
-        fieldId: specificField.id,
-        options: specificField.options,
-    };
-}
-
-;// CONCATENATED MODULE: ./actions/utils/getProjectId.ts
-async function getProjectType(octokit, projectOwner) {
-    const res = await octokit.rest.users.getByUsername({ username: projectOwner });
-    return res.data.type; // "User" or "Organization"
-}
-async function getProjectId(octokit, token, projectOwner, projectNumber) {
-    const projectType = await getProjectType(octokit, projectOwner);
-    const query = `
-    query($login: String!, $number: Int!) {
-      ${projectType === 'Organization' ? 'organization' : 'user'}(login: $login) {
-        projectV2(number: $number) {
-          id
-        }
-      }
-    }
-  `;
-    const response = await octokit.graphql(query, {
-        login: projectOwner,
-        number: projectNumber,
-        headers: {
-            authorization: `Bearer ${token}`,
-        },
-    });
-    if ('organization' in response && response.organization?.projectV2?.id) {
-        return response.organization.projectV2.id;
-    }
-    if ('user' in response && response.user?.projectV2?.id) {
-        return response.user.projectV2.id;
-    }
-    throw new Error('Project ID를 찾을 수 없습니다.');
-}
-
-;// CONCATENATED MODULE: ./actions/utils/getProjectOptionId.ts
-function getProjectOptionId(options, targetColumn) {
-    const option = options.find(opt => opt.name === targetColumn);
-    if (!option) {
-        throw new Error(`'${targetColumn}' 상태 옵션을 찾을 수 없습니다.`);
-    }
-    return option.id;
-}
-
-;// CONCATENATED MODULE: ./actions/utils/getProjectMetadata.ts
-
-
-
-async function getProjectMetadata(octokit, token, projectOwner, projectNumber, targetColumn) {
-    const projectId = await getProjectId(octokit, token, projectOwner, projectNumber);
-    const { fieldId, options } = await getProjectFieldId(octokit, token, projectId);
-    const statusOptionId = getProjectOptionId(options, targetColumn);
-    return { projectId, fieldId, statusOptionId };
-}
-
 ;// CONCATENATED MODULE: ./actions/utils/extractIssueNumberFromBranch.ts
 // refs/heads/feature/123-add-logic 같은 브랜치 이름에서 123을 추출
 function extractIssueNumberFromBranch(ref) {
@@ -34494,38 +34349,27 @@ function extractIssueNumberFromBranch(ref) {
     return issueNumber;
 }
 
-;// CONCATENATED MODULE: ./actions/start-issue/index.ts
-
-
-
+;// CONCATENATED MODULE: ./actions/close-issue-on-pr-merge/index.ts
 
 
 
 async function run() {
     try {
         const token = (0,core.getInput)('github_token');
-        const projectOwner = (0,core.getInput)('project_owner');
-        const projectNumber = parseInt((0,core.getInput)('project_number'), 10);
-        const targetColumn = (0,core.getInput)('target_column');
         const octokit = (0,github.getOctokit)(token);
-        // 1. 이슈 번호를 브랜치 이름에서 추출
-        const issueNumber = extractIssueNumberFromBranch(github.context.ref);
-        const { data: issue } = await octokit.rest.issues.get({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
+        const issueNumber = extractIssueNumberFromBranch(github.context.payload.pull_request?.head.ref);
+        const { owner, repo } = github.context.repo;
+        await octokit.rest.issues.update({
+            owner,
+            repo,
             issue_number: issueNumber,
+            state: 'closed',
         });
-        // 2. projectId, fieldId, statusOptionId을 가져오는 과정
-        const { projectId, fieldId, statusOptionId } = await getProjectMetadata(octokit, token, projectOwner, projectNumber, targetColumn);
-        // 3. 이슈 item id를 얻어옴 -> 이미 프로젝트에 등록되어있으면 그 id를 반환하기 때문에 addIssueToProject를 호출해도 무방
-        const itemId = await addIssueToProject(octokit, token, projectId, issue.node_id);
-        // 4. 이슈 상태를 특정 상태로 업데이트
-        await updateStatusField(octokit, token, projectId, itemId, fieldId, statusOptionId);
-        (0,core.info)(`이슈 #${issueNumber}가 '${targetColumn}' 상태로 이동되었습니다.`);
+        (0,core.info)(`이슈 #${issueNumber}가 PR 머지로 인해 Close 되었습니다.`);
     }
-    catch (error) {
-        if (error instanceof Error) {
-            (0,core.setFailed)(error.message);
+    catch (err) {
+        if (err instanceof Error) {
+            (0,core.setFailed)(`이슈 닫기 실패: ${err.message}`);
         }
     }
 }

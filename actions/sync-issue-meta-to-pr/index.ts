@@ -17,7 +17,7 @@ async function run() {
     const octokit = getOctokit(token);
     const repositoryOwner = context.repo.owner;
     const repositoryName = context.repo.repo;
-    const issueNumber = extractIssueNumberFromBranch();
+    const issueNumber = extractIssueNumberFromBranch(context.payload.pull_request?.head.ref);
     const prNumber = context.payload.pull_request?.number;
 
     if (!prNumber) {
